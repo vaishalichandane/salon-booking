@@ -150,6 +150,9 @@ app.get("/invoice/:id", async (req, res) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("Salon Booking API is running 🚀");
+});
 
 /* =========================
    ✅ SERVER START
