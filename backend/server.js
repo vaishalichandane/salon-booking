@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const User = require("./models/User");
 
 const app = express();
 
@@ -40,7 +41,36 @@ const bookingSchema = new mongoose.Schema({
 });
 
 const Booking = mongoose.model("Booking", bookingSchema);
+/* =========================
+   ✅ USER SIGNUP
+========================= */
+app.post("/users/signup", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
+    // check existing user
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({ message: "User already exists ❌" });
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    res.json({ message: "Signup successful ✅" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error signing up" });
+  }
+});
 
 /* =========================
    ✅ SAVE BOOKING (PAYMENT)
@@ -124,6 +154,8 @@ app.get("/invoice/:id", async (req, res) => {
 /* =========================
    ✅ SERVER START
 ========================= */
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
