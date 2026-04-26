@@ -25,9 +25,10 @@ function Signup() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
+  name: form.name,   // ✅ ADD HERE
+  email: form.email,
+  password: form.password,
+}),
       });
 
       const data = await response.json();
