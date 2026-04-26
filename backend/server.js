@@ -2,8 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
-const User = require("./models/User");
 const Razorpay = require("razorpay");
+
+const User = require("./models/User");
+
 const app = express();
 
 // middleware
@@ -13,16 +15,21 @@ app.use(express.json());
 /* =========================
    ✅ MONGODB CONNECTION
 ========================= */
-mongoose.connect(
-  "mongodb+srv://vaishalichandane543_db_user:test123@cluster0.kowcsjh.mongodb.net/salonDB?retryWrites=true&w=majority"
-)
-.then(() => console.log("MongoDB Connected ✅"))
-.catch((err) => console.log("Mongo Error ❌", err));
+mongoose
+  .connect(
+    "mongodb+srv://vaishalichandane543_db_user:test123@cluster0.kowcsjh.mongodb.net/salonDB?retryWrites=true&w=majority"
+  )
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch((err) => console.log("Mongo Error ❌", err));
 
+/* =========================
+   ✅ RAZORPAY CONFIG
+========================= */
 const razorpay = new Razorpay({
-  key_id: "rzp_live_Si9SKzaBP9gFtB",
-  key_secret: "yCeYhoVCelHMQIfVuWlJ8ai9",
+  key_id: "rzp_test_Si9opVDSfyrDMC",
+  key_secret: "yJYKpuyx1zsN2ZNStE8fnbLX", // ⚠️ keep safe later in env file
 });
+
 /* =========================
    ✅ BOOKING MODEL
 ========================= */
@@ -44,6 +51,7 @@ const bookingSchema = new mongoose.Schema({
 });
 
 const Booking = mongoose.model("Booking", bookingSchema);
+
 /* =========================
    ✅ USER SIGNUP
 ========================= */
@@ -51,13 +59,11 @@ app.post("/users/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.json({ message: "User already exists ❌" });
     }
 
-    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
@@ -76,7 +82,29 @@ app.post("/users/signup", async (req, res) => {
 });
 
 /* =========================
-   ✅ SAVE BOOKING (PAYMENT)
+   ✅ CREATE RAZORPAY ORDER
+========================= */
+app.post("/create-order", async (req, res) => {
+  try {
+    const { amount } = req.body;
+
+    const options = {
+      amount: amount * 100, // convert rupees → paise
+      currency: "INR",
+      receipt: "order_" + Date.now(),
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    res.json(order);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Order creation failed" });
+  }
+});
+
+/* =========================
+   ✅ SAVE BOOKING
 ========================= */
 app.post("/book", async (req, res) => {
   try {
@@ -94,16 +122,15 @@ app.post("/book", async (req, res) => {
 
     await newBooking.save();
 
-    res.json(newBooking); // ✅ send data to frontend
+    res.json(newBooking);
   } catch (err) {
     console.log(err);
     res.status(500).send("Error saving booking");
   }
 });
 
-
 /* =========================
-   ✅ GET ALL BOOKINGS (HISTORY)
+   ✅ GET BOOKINGS
 ========================= */
 app.get("/bookings", async (req, res) => {
   try {
@@ -114,24 +141,18 @@ app.get("/bookings", async (req, res) => {
   }
 });
 
-
 /* =========================
-   ✅ INVOICE PAGE (HTML)
+   ✅ INVOICE PAGE
 ========================= */
 app.get("/invoice/:id", async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
 
-    if (!booking) {
-      return res.send("Booking not found");
-    }
+    if (!booking) return res.send("Booking not found");
 
     res.send(`
       <html>
-        <head>
-          <title>Invoice</title>
-        </head>
-        <body style="font-family: Arial; padding: 20px;">
+        <body style="font-family: Arial; padding:20px;">
           <h1>Salon Invoice</h1>
 
           <p><b>Email:</b> ${booking.email}</p>
@@ -141,9 +162,7 @@ app.get("/invoice/:id", async (req, res) => {
           <p><b>Payment:</b> ${booking.paymentMethod}</p>
           <p><b>Status:</b> ${booking.paymentStatus}</p>
 
-          <br/>
-
-          <button onclick="window.print()">Download Invoice</button>
+          <button onclick="window.print()">Download PDF</button>
         </body>
       </html>
     `);
@@ -153,6 +172,9 @@ app.get("/invoice/:id", async (req, res) => {
   }
 });
 
+/* =========================
+   ✅ HOME ROUTE
+========================= */
 app.get("/", (req, res) => {
   res.send("Salon Booking API is running 🚀");
 });
@@ -161,22 +183,6 @@ app.get("/", (req, res) => {
    ✅ SERVER START
 ========================= */
 const PORT = process.env.PORT || 5000;
-app.post("/create-order", async (req, res) => {
-  try {
-    const options = {
-      amount: 500 * 100, // fixed ₹500 for now
-      currency: "INR",
-      receipt: "test_order",
-    };
-
-    const order = await razorpay.orders.create(options);
-
-    res.json(order);
-  } catch (error) {
-    console.log(error);
-    res.send("error");
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

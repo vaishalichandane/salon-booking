@@ -12,213 +12,83 @@ function Payment() {
   const [method, setMethod] = useState("");
 
   const handlePayment = async () => {
-  if (!method) {
-    alert("Please select payment method");
-    return;
-  }
-
-  try {
-    // ✅ Step 1: Create order from backend
-    const res = await fetch("https://salon-booking-1r2e.onrender.com/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount: price }), // dynamic price
-    });
-
-    const data = await res.json();
-
-    // ✅ Step 2: Open Razorpay popup
-    const options = {
-      key: "YOUR_KEY_ID", // 👈 replace this
-      amount: data.amount,
-      currency: "INR",
-      name: "Glow Salon",
-      description: service,
-      order_id: data.id,
-
-      handler: async function () {
-        // ✅ Step 3: Save booking AFTER payment
-        const saveRes = await fetch("https://salon-booking-1r2e.onrender.com/book", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: "test@gmail.com",
-            service,
-            price,
-            time,
-            paymentMethod: method,
-          }),
-        });
-
-        const saveData = await saveRes.json();
-
-        alert("Payment Successful ✅");
-
-        navigate("/invoice", {
-          state: saveData,
-        });
-      },
-    };
-
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-
-  } catch (error) {
-    console.error(error);
-    alert("Payment failed ❌");
-  }
-};
-
-    console.log({
-      email: "test@gmail.com",
-      service,
-      price,
-      time,
-      paymentMethod: method,
-    });
+    if (!method) {
+      alert("Please select payment method");
+      return;
+    }
 
     try {
-      // ✅ CORRECT API
-      const res = await fetch("https://salon-booking-1r2e.onrender.com/book", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const orderRes = await fetch(
+        "https://salon-booking-1r2e.onrender.com/create-order",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: price }),
+        }
+      );
+
+      const orderData = await orderRes.json();
+
+      const options = {
+        key: "rzp_test_Si9opVDSfyrDMC",
+        amount: orderData.amount,
+        currency: "INR",
+        name: "Glow Salon",
+        description: "Salon Booking Payment",
+        order_id: orderData.id,
+
+        handler: async function () {
+          alert("Payment Successful ✅");
+
+          const res = await fetch(
+            "https://salon-booking-1r2e.onrender.com/book",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: "test@gmail.com",
+                service,
+                price,
+                time,
+                paymentMethod: method,
+              }),
+            }
+          );
+
+          const data = await res.json();
+          navigate("/invoice", { state: data });
         },
-        body: JSON.stringify({
-          email: "test@gmail.com",
-          service,
-          price,
-          time,
-          paymentMethod: method,
-        }),
-      });
 
-      const data = await res.json();
+        theme: { color: "#e91e63" },
+      };
 
-      alert("Payment Successful ✅");
-
-      // ✅ send backend data
-      navigate("/invoice", {
-        state: data,
-      });
-
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
       console.error(error);
-      alert("Error saving booking ❌");
+      alert("Payment failed ❌");
     }
   };
 
   return (
-    <div style={container}>
-      <div style={card}>
-        <h2 style={{ textAlign: "center", color: "#e91e63" }}>
-          Payment
-        </h2>
+    <div>
+      <h2>Payment Page</h2>
 
-        <div style={detailsBox}>
-          <p><b>Service:</b> {service}</p>
-          <p><b>Time:</b> {time}</p>
-          <p><b>Amount:</b> ₹{price}</p>
-        </div>
+      <p>Service: {service}</p>
+      <p>Price: ₹{price}</p>
+      <p>Time: {time}</p>
 
-        <h4>Select Payment Method</h4>
+      <button onClick={() => setMethod("UPI")}>UPI</button>
+      <button onClick={() => setMethod("Card")}>Card</button>
+      <button onClick={() => setMethod("Cash")}>Cash</button>
 
-        <div style={methodContainer}>
-          <button
-            style={{
-              ...methodBtn,
-              background: method === "UPI" ? "#ffe4ec" : "#fff",
-            }}
-            onClick={() => setMethod("UPI")}
-          >
-            UPI
-          </button>
+      <br /><br />
 
-          <button
-            style={{
-              ...methodBtn,
-              background: method === "Card" ? "#ffe4ec" : "#fff",
-            }}
-            onClick={() => setMethod("Card")}
-          >
-            Card
-          </button>
-
-          <button
-            style={{
-              ...methodBtn,
-              background: method === "Cash" ? "#ffe4ec" : "#fff",
-            }}
-            onClick={() => setMethod("Cash")}
-          >
-            Cash
-          </button>
-        </div>
-
-        <p style={{ marginTop: "10px", fontWeight: "bold" }}>
-          {method && `Selected: ${method}`}
-        </p>
-
-        <button onClick={handlePayment} style={mainBtn}>
-          Confirm Payment
-        </button>
-      </div>
+      <button onClick={handlePayment}>
+        Confirm Payment
+      </button>
     </div>
   );
 }
-
-/* STYLES */
-
-const container = {
-  minHeight: "100vh",
-  background: "#f4f6f8",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
-const card = {
-  width: "400px",
-  background: "#fff",
-  padding: "30px",
-  borderRadius: "15px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-};
-
-const detailsBox = {
-  background: "#f9f9f9",
-  padding: "10px",
-  borderRadius: "8px",
-  marginBottom: "15px",
-};
-
-const methodContainer = {
-  display: "flex",
-  gap: "10px",
-};
-
-const methodBtn = {
-  flex: 1,
-  padding: "10px",
-  border: "1px solid #ddd",
-  borderRadius: "8px",
-  cursor: "pointer",
-};
-
-const mainBtn = {
-  width: "100%",
-  padding: "12px",
-  background: "#e91e63",
-  color: "#fff",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  marginTop: "10px",
-  fontWeight: "bold",
-};
 
 export default Payment;
