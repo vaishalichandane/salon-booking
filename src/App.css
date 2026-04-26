@@ -1,0 +1,239 @@
+/* HERO BACKGROUND */
+.hero-section {
+  background: url("https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9") center/cover no-repeat;
+  color: white;
+  padding: 120px 20px;
+}
+
+/* SERVICE IMAGE */
+.service-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* ABOUT SECTION */
+.about-section {
+  background: url("https://images.unsplash.com/photo-1515377905703-c4788e51af15") center/cover no-repeat;
+  padding: 80px 20px;
+  color: white;
+}
+
+.about-box {
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 10px;
+  display: inline-block;
+}
+.section-title {
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+/* CARD STYLE */
+.service-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+  margin-bottom: 25px;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  transition: 0.3s;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.service-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* TEXT AREA */
+.service-content {
+  padding: 15px;
+}
+
+.service-content h3 {
+  color: #e91e63;
+  margin-bottom: 5px;
+}
+
+.service-content p {
+  font-size: 14px;
+  color: #555;
+}
+.booking-page {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.booking-page::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("https://images.unsplash.com/photo-1560066984-138dadb4c035") center/cover no-repeat;
+  filter: blur(8px);
+  transform: scale(1.1);
+  z-index: -1;
+}
+
+.booking-overlay {
+  background: rgba(0, 0, 0, 0.7); /* darker = better readability */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.booking-form-container {
+  background: rgba(255, 255, 255, 0.95); /* almost solid white */
+  color: #000; /* black text */
+  padding: 30px;
+  border-radius: 12px;
+  width: 350px;
+  text-align: center;
+}
+/* GLOBAL */
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  background: #f8f9fa;
+}
+
+/* SECTION SPACING */
+section {
+  padding: 70px 20px;
+}
+
+/* TITLE */
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+/* BUTTON */
+.btn-warning {
+  background-color: #e91e63;
+  border: none;
+}
+.contact-page {
+  background: url("https://images.unsplash.com/photo-1515377905703-c4788e51af15") center/cover no-repeat;
+  height: 100vh;
+}
+
+.contact-overlay {
+  background: rgba(0,0,0,0.7);
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 350px;
+  text-align: center;
+}
+
+.contact-container input,
+.contact-container textarea {
+  margin-bottom: 10px;
+}
+.auth-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #ffe4ec, #fff);
+}
+
+.auth-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  width: 300px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.auth-card button {
+  width: 100%;
+  padding: 10px;
+  background: #e91e63;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+/* BACKGROUND */
+.auth-bg, .contact-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ffe4ec, #fff);
+}
+
+/* CARD */
+.auth-box, .contact-box {
+  background: white;
+  padding: 30px;
+  width: 350px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* INPUT */
+.auth-box input,
+.contact-box input,
+.contact-box textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+/* BUTTON */
+.auth-box button,
+.contact-box button {
+  width: 100%;
+  padding: 10px;
+  background: #e91e63;
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
+.navbar-nav > li {
+  display: flex;
+  align-items: center;
+}
+button:hover {
+  transform: scale(1.05);
+}
+.section {
+  padding: 60px 20px;
+}
+input:focus, textarea:focus {
+  border: 1px solid #e91e63;
+  box-shadow: 0 0 5px rgba(233,30,99,0.3);
+}
