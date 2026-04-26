@@ -19,7 +19,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("https://salon-booking-1r2e.onrender.com/api/users/signup", {
+      const response = await fetch("https://salon-booking-1r2e.onrender.com/users/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
