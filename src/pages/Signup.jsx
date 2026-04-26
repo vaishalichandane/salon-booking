@@ -9,39 +9,34 @@ function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ CONNECTED TO BACKEND
   const handleSignup = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!form.name || !form.email || !form.password) {
-      alert("Please fill all fields");
-      return;
-    }
+  try {
+    const response = await fetch("https://salon-booking-1r2e.onrender.com/users/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      }),
+    });
 
-    try {
-      const response = await fetch("https://salon-booking-1r2e.onrender.com/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-  name: form.name,   // ✅ ADD HERE
-  email: form.email,
-  password: form.password,
-}),
-      });
+    console.log("STATUS:", response.status);
 
-      const data = await response.json();
+    const data = await response.json();
+    console.log("DATA:", data);
 
-      alert(data.message);
+    alert(data.message);
 
-      if (response.ok) {
-        navigate("/login");
-      }
-    } catch (error) {
-      alert("Error connecting to server");
-    }
-  };
+  } catch (error) {
+    console.log("FULL ERROR:", error);
+    alert("Error connecting to server");
+  }
+};
 
   return (
     <div style={{
