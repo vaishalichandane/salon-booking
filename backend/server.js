@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
-
+const Razorpay = require("razorpay");
 const app = express();
 
 // middleware
@@ -19,7 +19,10 @@ mongoose.connect(
 .then(() => console.log("MongoDB Connected ✅"))
 .catch((err) => console.log("Mongo Error ❌", err));
 
-
+const razorpay = new Razorpay({
+  key_id: "YOUR_KEY_ID",
+  key_secret: "YOUR_KEY_SECRET",
+});
 /* =========================
    ✅ BOOKING MODEL
 ========================= */
@@ -158,6 +161,22 @@ app.get("/", (req, res) => {
    ✅ SERVER START
 ========================= */
 const PORT = process.env.PORT || 5000;
+app.post("/create-order", async (req, res) => {
+  try {
+    const options = {
+      amount: 500 * 100, // fixed ₹500 for now
+      currency: "INR",
+      receipt: "test_order",
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    res.json(order);
+  } catch (error) {
+    console.log(error);
+    res.send("error");
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
