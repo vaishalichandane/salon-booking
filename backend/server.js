@@ -20,8 +20,8 @@ mongoose.connect(
 .catch((err) => console.log("Mongo Error ❌", err));
 
 const razorpay = new Razorpay({
-  key_id: "YOUR_KEY_ID",
-  key_secret: "YOUR_KEY_SECRET",
+  key_id: "rzp_live_Si9SKzaBP9gFtB",
+  key_secret: "yCeYhoVCelHMQIfVuWlJ8ai9",
 });
 /* =========================
    ✅ BOOKING MODEL

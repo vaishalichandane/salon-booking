@@ -12,10 +12,66 @@ function Payment() {
   const [method, setMethod] = useState("");
 
   const handlePayment = async () => {
-    if (!method) {
-      alert("Please select payment method");
-      return;
-    }
+  if (!method) {
+    alert("Please select payment method");
+    return;
+  }
+
+  try {
+    // ✅ Step 1: Create order from backend
+    const res = await fetch("https://salon-booking-1r2e.onrender.com/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: price }), // dynamic price
+    });
+
+    const data = await res.json();
+
+    // ✅ Step 2: Open Razorpay popup
+    const options = {
+      key: "YOUR_KEY_ID", // 👈 replace this
+      amount: data.amount,
+      currency: "INR",
+      name: "Glow Salon",
+      description: service,
+      order_id: data.id,
+
+      handler: async function () {
+        // ✅ Step 3: Save booking AFTER payment
+        const saveRes = await fetch("https://salon-booking-1r2e.onrender.com/book", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: "test@gmail.com",
+            service,
+            price,
+            time,
+            paymentMethod: method,
+          }),
+        });
+
+        const saveData = await saveRes.json();
+
+        alert("Payment Successful ✅");
+
+        navigate("/invoice", {
+          state: saveData,
+        });
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (error) {
+    console.error(error);
+    alert("Payment failed ❌");
+  }
+};
 
     console.log({
       email: "test@gmail.com",
