@@ -9,6 +9,10 @@ import Contact from "./pages/Contact";
 import Payment from "./pages/Payment";
 import Invoice from "./pages/Invoice";
 import BookingHistory from "./pages/BookingHistory";
+import Success from "./pages/Success";
+import Failed from "./pages/Failed";
+import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
   return (
@@ -25,6 +29,10 @@ function App() {
         <Route path="/payment" element={<Payment />} />
 <Route path="/invoice" element={<Invoice />} />
 <Route path="/history" element={<BookingHistory />} />
+<Route path="/success" element={<Success />} />
+<Route path="/failed" element={<Failed />} />
+<Route path="/admin" element={<Admin />} />
+<Route path="/admin-login" element={<AdminLogin />} />
 
       </Routes>
     </Router>

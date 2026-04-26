@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
 import services from "../data/services";
@@ -7,8 +7,11 @@ function Home() {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 
+  // 🔐 AUTH STATUS
   const isLoggedIn = !!localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("adminToken") === "true";
 
+  // 👉 BOOK NOW
   const handleBookingClick = () => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -17,24 +20,47 @@ function Home() {
     }
   };
 
+  // 👉 MAKE ADMIN (ONLY FOR TESTING)
+  const makeAdmin = () => {
+    localStorage.setItem("adminToken", "true");
+    window.location.reload();
+  };
+
+  // 👉 LOGOUT
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <div className={darkMode ? "dark-mode" : ""}>
 
       {/* NAVBAR */}
       <nav className="navbar navbar-inverse custom-navbar">
         <div className="container-fluid">
+
           <div className="navbar-header">
-            <Link className="navbar-brand" to="/">Glow Salon</Link>
+            <Link className="navbar-brand" to="/">
+              Glow Salon
+            </Link>
           </div>
 
           <ul className="nav navbar-nav navbar-right">
+
+            {/* LINKS */}
             <li><Link to="/">Home</Link></li>
             <li><a href="#services">Services</a></li>
             <li><Link to="/contact">Contact</Link></li>
-
-            {/* ✅ NEW BUTTON ADDED */}
             <li><Link to="/history">My Bookings</Link></li>
 
+            {/* 👑 ADMIN LINK */}
+            {isAdmin && (
+              <li>
+                <Link to="/admin">Admin</Link>
+              </li>
+            )}
+
+            {/* BOOK BUTTON */}
             <li style={{ marginTop: "8px" }}>
               <button
                 className="btn btn-warning btn-sm"
@@ -44,6 +70,7 @@ function Home() {
               </button>
             </li>
 
+            {/* LOGIN / LOGOUT */}
             {!isLoggedIn ? (
               <>
                 <li><Link to="/login">Login</Link></li>
@@ -52,10 +79,7 @@ function Home() {
             ) : (
               <li>
                 <button
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                    navigate("/login");
-                  }}
+                  onClick={logout}
                   className="btn btn-link"
                   style={{ color: "white" }}
                 >
@@ -64,6 +88,19 @@ function Home() {
               </li>
             )}
 
+            {/* 🧪 ADMIN TEST BUTTON */}
+            {!isAdmin && (
+              <li>
+                <button
+                  onClick={makeAdmin}
+                  className="btn btn-danger btn-sm"
+                >
+                  Admin
+                </button>
+              </li>
+            )}
+
+            {/* 🌙 DARK MODE */}
             <li>
               <button
                 onClick={() => setDarkMode(!darkMode)}
@@ -73,6 +110,7 @@ function Home() {
                 🌙
               </button>
             </li>
+
           </ul>
         </div>
       </nav>
@@ -120,25 +158,16 @@ function Home() {
           style={{
             maxWidth: "1200px",
             margin: "auto",
-            background: "#ffffff",
+            background: "#fff",
             padding: "50px",
             borderRadius: "12px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
             textAlign: "center",
           }}
         >
-          <h2 style={{ fontSize: "34px", fontWeight: "bold" }}>
-            About Glow Salon
-          </h2>
-
+          <h2>About Glow Salon</h2>
           <p style={{ color: "#555", lineHeight: "1.8" }}>
-            At <strong>Glow Salon & Beauty Studio</strong>, we create beauty
-            experiences that enhance confidence and personal style.
-            <br /><br />
-            From hair styling to skincare and makeup, our experts deliver
-            personalized services tailored to every client.
-            <br /><br />
-            We focus on quality, comfort, and premium care.
+            Premium beauty salon offering hair, skin, and makeup services with expert care.
           </p>
         </div>
       </div>
@@ -149,6 +178,7 @@ function Home() {
           © 2026 Glow Salon | All Rights Reserved
         </div>
       </footer>
+
     </div>
   );
 }

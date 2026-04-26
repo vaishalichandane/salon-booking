@@ -9,7 +9,7 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
@@ -17,24 +17,50 @@ function Login() {
       return;
     }
 
-    localStorage.setItem("token", "user123");
-    navigate("/");
+    try {
+      const res = await fetch("http://localhost:5000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        // ✅ Save real token
+        localStorage.setItem("token", data.token);
+
+        // optional role (user/admin)
+        localStorage.setItem("role", data.role);
+
+        alert("Login successful");
+
+        navigate("/");
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Server error. Try again later.");
+    }
   };
 
   return (
     <div
-  style={{
-    minHeight: "100vh",
-    backgroundImage:
-      "url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    position: "relative",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  }}
->
+      style={{
+        minHeight: "100vh",
+        backgroundImage:
+          "url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       {/* OVERLAY */}
       <div
         style={{
@@ -45,7 +71,7 @@ function Login() {
         }}
       ></div>
 
-      {/* FORM */}
+      {/* LOGIN BOX */}
       <div
         style={{
           position: "relative",
@@ -97,6 +123,7 @@ function Login() {
   );
 }
 
+/* STYLES */
 const inputStyle = {
   width: "100%",
   padding: "12px",

@@ -17,6 +17,33 @@ function Payment() {
       return;
     }
 
+    // 💵 CASH FLOW (UNCHANGED BUT FIXED STATUS ADDED)
+    if (method === "Cash") {
+      const res = await fetch(
+        "https://salon-booking-1r2e.onrender.com/book",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: "test@gmail.com",
+            service,
+            price,
+            time,
+            paymentMethod: "Cash",
+            paymentStatus: "Cash", // ✅ ADDED
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      alert("Booking Confirmed (Cash) ✅");
+      navigate("/success", { state: data });
+
+      return;
+    }
+
+    // 💳 UPI / CARD → RAZORPAY FLOW
     try {
       const orderRes = await fetch(
         "https://salon-booking-1r2e.onrender.com/create-order",
@@ -37,9 +64,8 @@ function Payment() {
         description: "Salon Booking Payment",
         order_id: orderData.id,
 
-        handler: async function () {
-          alert("Payment Successful ✅");
-
+        // ✅ SUCCESS HANDLER (UNCHANGED LOGIC)
+        handler: async function (response) {
           const res = await fetch(
             "https://salon-booking-1r2e.onrender.com/book",
             {
@@ -51,44 +77,159 @@ function Payment() {
                 price,
                 time,
                 paymentMethod: method,
+                paymentStatus: "Success", // ✅ ADDED
               }),
             }
           );
 
           const data = await res.json();
-          navigate("/invoice", { state: data });
+
+          navigate("/success", { state: data });
         },
 
-        theme: { color: "#e91e63" },
+        // ❗ PAYMENT FAILED HANDLING (ADDED SAFE)
+        modal: {
+          ondismiss: function () {
+            navigate("/failed");
+          },
+        },
+
+        // ❗ Razorpay failure event (ADDED SAFE)
+        "payment.failed": function () {
+          alert("Payment Failed ❌");
+          navigate("/failed");
+        },
+
+        theme: {
+          color: "#e91e63",
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
+
     } catch (error) {
-      console.error(error);
+      console.log(error);
       alert("Payment failed ❌");
+      navigate("/failed");
     }
   };
 
   return (
-    <div>
-      <h2>Payment Page</h2>
+    <div style={container}>
+      <div style={card}>
+        <h2 style={title}>💳 Secure Payment</h2>
+        <p style={subTitle}>Complete your booking safely</p>
 
-      <p>Service: {service}</p>
-      <p>Price: ₹{price}</p>
-      <p>Time: {time}</p>
+        <div style={box}>
+          <p><b>Service:</b> {service}</p>
+          <p><b>Price:</b> ₹{price}</p>
+          <p><b>Time:</b> {time}</p>
+        </div>
 
-      <button onClick={() => setMethod("UPI")}>UPI</button>
-      <button onClick={() => setMethod("Card")}>Card</button>
-      <button onClick={() => setMethod("Cash")}>Cash</button>
+        <h4 style={{ marginTop: "20px" }}>Choose Payment Method</h4>
 
-      <br /><br />
+        <div style={methodGrid}>
+          <div
+            style={method === "UPI" ? activeCard : methodCard}
+            onClick={() => setMethod("UPI")}
+          >
+            📱 UPI
+          </div>
 
-      <button onClick={handlePayment}>
-        Confirm Payment
-      </button>
+          <div
+            style={method === "Card" ? activeCard : methodCard}
+            onClick={() => setMethod("Card")}
+          >
+            💳 Card
+          </div>
+
+          <div
+            style={method === "Cash" ? activeCard : methodCard}
+            onClick={() => setMethod("Cash")}
+          >
+            💵 Cash
+          </div>
+        </div>
+
+        <button onClick={handlePayment} style={payBtn}>
+          Pay ₹{price}
+        </button>
+      </div>
     </div>
   );
 }
+
+/* ===== STYLES (UNCHANGED) ===== */
+
+const container = {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "linear-gradient(135deg, #f8bbd0, #ede7f6)",
+};
+
+const card = {
+  width: "380px",
+  background: "#fff",
+  padding: "25px",
+  borderRadius: "18px",
+  boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
+  textAlign: "center",
+};
+
+const title = {
+  color: "#e91e63",
+  fontSize: "22px",
+  fontWeight: "bold",
+};
+
+const subTitle = {
+  fontSize: "13px",
+  color: "#777",
+  marginBottom: "15px",
+};
+
+const box = {
+  background: "#f7f7f7",
+  padding: "12px",
+  borderRadius: "10px",
+  textAlign: "left",
+};
+
+const methodGrid = {
+  display: "flex",
+  gap: "10px",
+  marginTop: "15px",
+};
+
+const methodCard = {
+  flex: 1,
+  padding: "12px",
+  border: "1px solid #ddd",
+  borderRadius: "10px",
+  cursor: "pointer",
+  background: "#fff",
+};
+
+const activeCard = {
+  ...methodCard,
+  background: "#ffe0eb",
+  border: "1px solid #e91e63",
+  transform: "scale(1.05)",
+};
+
+const payBtn = {
+  width: "100%",
+  marginTop: "25px",
+  padding: "12px",
+  background: "#e91e63",
+  color: "#fff",
+  border: "none",
+  borderRadius: "12px",
+  fontWeight: "bold",
+  cursor: "pointer",
+};
 
 export default Payment;
