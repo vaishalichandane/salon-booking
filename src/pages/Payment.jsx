@@ -27,7 +27,7 @@ function Payment() {
 
     try {
       // ✅ CORRECT API
-      const res = await fetch("http://localhost:5000/book", {
+      const res = await fetch("https://salon-booking-1r2e.onrender.com/book", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

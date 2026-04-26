@@ -43,7 +43,7 @@ function BookingHistory() {
             {/* DOWNLOAD INVOICE BUTTON */}
             <button
               onClick={() =>
-                window.open(`http://localhost:5000/invoice/${b._id}`)
+                window.open(`https://salon-booking-1r2e.onrender.com/invoice/${b._id}`)
               }
               style={downloadBtn}
             >
