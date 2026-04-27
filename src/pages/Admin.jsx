@@ -36,7 +36,7 @@ function Admin() {
       .catch((err) => console.log(err));
   }, []);
 
-  // 🔍 FILTER + SEARCH LOGIC
+  // 🔍 SEARCH + FILTER
   const filteredBookings = bookings.filter((b) => {
     const matchSearch =
       b.email?.toLowerCase().includes(search.toLowerCase()) ||
@@ -48,7 +48,7 @@ function Admin() {
     return matchSearch && matchFilter;
   });
 
-  // 📊 CALCULATIONS
+  // 📊 DATA
   const total = bookings.length;
 
   const revenue = bookings.reduce(
@@ -78,7 +78,7 @@ function Admin() {
 
   return (
     <div style={container}>
-      <h1>📊 Admin Dashboard</h1>
+      <h1 style={{ textAlign: "center" }}>📊 Admin Dashboard</h1>
 
       {/* CARDS */}
       <div style={cardRow}>
@@ -153,7 +153,7 @@ function Admin() {
       )}
 
       {/* TABLE */}
-      <h2>All Bookings</h2>
+      <h2 style={{ marginTop: "30px" }}>All Bookings</h2>
 
       <table style={table}>
         <thead>
@@ -182,26 +182,29 @@ function Admin() {
   );
 }
 
-/* ===== STYLES ===== */
+/* ===== PREMIUM STYLES ===== */
 
 const container = {
   padding: "30px",
-  fontFamily: "Arial",
-  background: "#f5f5f5",
+  fontFamily: "Segoe UI",
+  background: "#f5f7fa",
+  minHeight: "100vh",
 };
 
 const cardRow = {
   display: "flex",
   gap: "20px",
+  marginTop: "20px",
 };
 
 const card = {
   flex: 1,
-  background: "#e91e63",
+  background: "linear-gradient(135deg, #e91e63, #9c27b0)",
   color: "white",
-  padding: "20px",
-  borderRadius: "12px",
+  padding: "25px",
+  borderRadius: "16px",
   textAlign: "center",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
 };
 
 const searchBox = {
@@ -233,6 +236,9 @@ const table = {
   marginTop: "20px",
   background: "white",
   borderCollapse: "collapse",
+  borderRadius: "12px",
+  overflow: "hidden",
+  boxShadow: "0 5px 15px rgba(0,0,0,0.08)",
 };
 
 export default Admin;
