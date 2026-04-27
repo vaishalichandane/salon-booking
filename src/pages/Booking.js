@@ -6,46 +6,47 @@ function Booking() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const location = useLocation();   // ✅ get data from previous page
+  const location = useLocation();
   const navigate = useNavigate();
 
   const { form, handleChange, setForm } = useForm({
     name: "",
     mobile: "",
     service: "",
-    date: ""
+    date: "",
   });
 
   const nameRef = useRef();
 
-  // ✅ Focus input
+  // auto focus
   useEffect(() => {
-    nameRef.current.focus();
+    nameRef.current?.focus();
   }, []);
 
-  // ✅ Protect page (LOGIN REQUIRED)
+  // login protection
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       alert("Please login first");
       navigate("/login");
     }
   }, [navigate]);
 
-  // ✅ Auto-fill service from ServiceDetails
+  // auto-fill service from service page
   useEffect(() => {
-    if (location.state) {
+    if (location.state?.selectedService) {
       setForm((prev) => ({
         ...prev,
-        service: location.state.selectedService
+        service: location.state.selectedService,
       }));
     }
   }, [location, setForm]);
 
-  const handleSubmit = (e) => {
+  // 🚀 FINAL BOOKING LOGIC (CONNECTED TO BACKEND)
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // validation
     if (!form.name || !form.mobile || !form.service || !form.date) {
       setMessage("❌ Please fill all fields");
       return;
@@ -57,11 +58,39 @@ function Booking() {
     }
 
     setLoading(true);
+    setMessage("");
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await fetch(
+        "https://salon-booking-1r2e.onrender.com/book",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: "test@gmail.com",
+            name: form.name,
+            mobile: form.mobile,
+            service: form.service,
+            date: form.date,
+            paymentMethod: "Pending",
+            paymentStatus: "Pending",
+          }),
+        }
+      );
+
+      const data = await res.json();
+
       setMessage("✅ Booking Successful!");
-    }, 1500);
+
+      // 👉 move to payment page with data
+      navigate("/payment", { state: data });
+
+    } catch (error) {
+      console.log(error);
+      setMessage("❌ Something went wrong");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -71,15 +100,15 @@ function Booking() {
       <nav className="navbar navbar-inverse custom-navbar">
         <div className="container-fluid">
           <div className="navbar-header">
-            <Link className="navbar-brand" to="/">Glow Salon</Link>
+            <Link className="navbar-brand" to="/">
+              Glow Salon
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* OVERLAY */}
+      {/* FORM */}
       <div className="booking-overlay">
-
-        {/* FORM CARD */}
         <div className="booking-form-container">
 
           <h2>Book an Appointment</h2>
@@ -137,17 +166,16 @@ function Booking() {
               />
             </div>
 
-            <button
-              className="btn btn-warning btn-block"
-              disabled={loading}
-            >
+            <button className="btn btn-warning btn-block" disabled={loading}>
               {loading ? "Booking..." : "Confirm Booking"}
             </button>
 
           </form>
 
           {/* MESSAGE */}
-          <p className="booking-message">{message}</p>
+          <p style={{ marginTop: "10px", color: "green" }}>
+            {message}
+          </p>
 
         </div>
       </div>
