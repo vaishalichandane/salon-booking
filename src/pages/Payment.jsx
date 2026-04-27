@@ -5,6 +5,8 @@ function Payment() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+  const [loading, setLoading] = useState(false);
+
   const service = state?.service;
   const price = state?.price;
   const time = state?.time;
@@ -12,39 +14,40 @@ function Payment() {
   const [method, setMethod] = useState("");
 
   const handlePayment = async () => {
+    // ❗ VALIDATION FIRST
     if (!method) {
       alert("Please select payment method");
       return;
     }
 
-    // 💵 CASH FLOW (UNCHANGED BUT FIXED STATUS ADDED)
-    if (method === "Cash") {
-      const res = await fetch(
-        "https://salon-booking-1r2e.onrender.com/book",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: "test@gmail.com",
-            service,
-            price,
-            time,
-            paymentMethod: "Cash",
-            paymentStatus: "Cash", // ✅ ADDED
-          }),
-        }
-      );
+    setLoading(true); // start loading only after validation
 
-      const data = await res.json();
-
-      alert("Booking Confirmed (Cash) ✅");
-      navigate("/success", { state: data });
-
-      return;
-    }
-
-    // 💳 UPI / CARD → RAZORPAY FLOW
     try {
+      // 💵 CASH FLOW
+      if (method === "Cash") {
+        const res = await fetch(
+          "https://salon-booking-1r2e.onrender.com/book",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: "test@gmail.com",
+              service,
+              price,
+              time,
+              paymentMethod: "Cash",
+            }),
+          }
+        );
+
+        const data = await res.json();
+
+        alert("Booking Confirmed (Cash) ✅");
+        navigate("/success", { state: data });
+        return;
+      }
+
+      // 💳 ONLINE PAYMENT (RAZORPAY)
       const orderRes = await fetch(
         "https://salon-booking-1r2e.onrender.com/create-order",
         {
@@ -64,8 +67,7 @@ function Payment() {
         description: "Salon Booking Payment",
         order_id: orderData.id,
 
-        // ✅ SUCCESS HANDLER (UNCHANGED LOGIC)
-        handler: async function (response) {
+        handler: async function () {
           const res = await fetch(
             "https://salon-booking-1r2e.onrender.com/book",
             {
@@ -77,7 +79,6 @@ function Payment() {
                 price,
                 time,
                 paymentMethod: method,
-                paymentStatus: "Success", // ✅ ADDED
               }),
             }
           );
@@ -87,17 +88,10 @@ function Payment() {
           navigate("/success", { state: data });
         },
 
-        // ❗ PAYMENT FAILED HANDLING (ADDED SAFE)
         modal: {
           ondismiss: function () {
             navigate("/failed");
           },
-        },
-
-        // ❗ Razorpay failure event (ADDED SAFE)
-        "payment.failed": function () {
-          alert("Payment Failed ❌");
-          navigate("/failed");
         },
 
         theme: {
@@ -113,6 +107,8 @@ function Payment() {
       alert("Payment failed ❌");
       navigate("/failed");
     }
+
+    setLoading(false); // always stop loading
   };
 
   return (
@@ -152,15 +148,19 @@ function Payment() {
           </div>
         </div>
 
-        <button onClick={handlePayment} style={payBtn}>
-          Pay ₹{price}
+        <button
+          onClick={handlePayment}
+          style={payBtn}
+          disabled={loading}
+        >
+          {loading ? "Processing Payment..." : `Pay ₹${price}`}
         </button>
       </div>
     </div>
   );
 }
 
-/* ===== STYLES (UNCHANGED) ===== */
+/* ===== STYLES ===== */
 
 const container = {
   minHeight: "100vh",

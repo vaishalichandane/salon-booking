@@ -4,94 +4,115 @@ function Invoice() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const service = state?.service;
-  const price = state?.price;
-  const time = state?.time;
-  const method = state?.paymentMethod;
-
-  const handleDownload = () => {
-    window.print(); // ✅ opens print → save as PDF
-  };
-
   if (!state) {
     return (
       <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <h2>No Invoice Data ❌</h2>
+        <h2>No Invoice Found ❌</h2>
         <button onClick={() => navigate("/")}>Go Home</button>
       </div>
     );
   }
 
+  const service = state?.service;
+  const price = state?.price;
+  const time = state?.time;
+  const method = state?.paymentMethod;
+
+  // ⭐ PREMIUM ADDITIONS
+  const invoiceId = "INV" + Math.floor(Math.random() * 100000);
+  const date = new Date().toLocaleString();
+
+  const handleDownload = () => {
+    window.print();
+  };
+
   return (
     <div style={container}>
-      <div style={card} id="invoice">
-        <h2 style={{ color: "#e91e63", textAlign: "center" }}>
-          Salon Invoice
-        </h2>
+      <div style={card}>
 
+        {/* HEADER */}
+        <h2 style={title}>💖 Glow Salon Invoice</h2>
+        <p style={subtitle}>Thank you for your booking!</p>
+
+        {/* INVOICE DETAILS */}
         <div style={box}>
-          <p><b>Service:</b> {service || "Basic Service"}</p>
-          <p><b>Time:</b> {time || "11:00 AM"}</p>
-          <p><b>Payment Method:</b> {method || "UPI"}</p>
-          <p><b>Amount Paid:</b> ₹{price || 1000}</p>
+          <p><b>Invoice ID:</b> {invoiceId}</p>
+          <p><b>Date:</b> {date}</p>
+          <p><b>Service:</b> {service}</p>
+          <p><b>Time:</b> {time}</p>
+          <p><b>Payment Method:</b> {method}</p>
+          <p><b>Total Amount:</b> ₹{price}</p>
         </div>
 
+        {/* BUTTONS */}
         <button onClick={handleDownload} style={downloadBtn}>
-          Download Invoice
+          Download Invoice (PDF)
         </button>
 
         <button onClick={() => navigate("/")} style={btn}>
           Back to Home
         </button>
+
       </div>
     </div>
   );
 }
 
-/* STYLES */
+/* ===== STYLES ===== */
 
 const container = {
   minHeight: "100vh",
-  background: "#f4f6f8",
+  background: "linear-gradient(135deg, #f8bbd0, #ede7f6)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
 };
 
 const card = {
-  width: "400px",
+  width: "420px",
   background: "#fff",
   padding: "30px",
-  borderRadius: "15px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+  borderRadius: "18px",
+  boxShadow: "0 15px 40px rgba(0,0,0,0.15)",
+};
+
+const title = {
+  textAlign: "center",
+  color: "#e91e63",
+};
+
+const subtitle = {
+  textAlign: "center",
+  color: "#777",
+  marginBottom: "15px",
 };
 
 const box = {
-  background: "#f9f9f9",
+  background: "#f7f7f7",
   padding: "15px",
-  borderRadius: "8px",
-  marginTop: "15px",
+  borderRadius: "10px",
+  lineHeight: "1.8",
 };
 
 const btn = {
   width: "100%",
   padding: "12px",
+  marginTop: "10px",
   background: "#e91e63",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
-  marginTop: "10px",
+  borderRadius: "10px",
   cursor: "pointer",
 };
 
 const downloadBtn = {
   width: "100%",
   padding: "12px",
+  marginTop: "20px",
   background: "#4CAF50",
   color: "#fff",
   border: "none",
-  borderRadius: "8px",
-  marginTop: "20px",
+  borderRadius: "10px",
   cursor: "pointer",
   fontWeight: "bold",
 };
