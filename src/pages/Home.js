@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Link, useNavigate } from "react-router-dom";
 import services from "../data/services";
+import Chatbot from "../components/Chatbot";
 
 function Home() {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
@@ -31,7 +32,7 @@ function Home() {
     localStorage.removeItem("token");
     navigate("/login");
   };
-
+<Chatbot />
   return (
     <div className={darkMode ? "dark-mode" : ""}>
 
