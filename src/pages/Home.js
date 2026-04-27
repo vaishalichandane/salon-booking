@@ -21,7 +21,7 @@ function Home() {
     }
   };
 
-  // 👉 MAKE ADMIN (ONLY FOR TESTING)
+  // 👉 MAKE ADMIN (TEST ONLY)
   const makeAdmin = () => {
     localStorage.setItem("adminToken", "true");
     window.location.reload();
@@ -32,7 +32,7 @@ function Home() {
     localStorage.removeItem("token");
     navigate("/login");
   };
-<Chatbot />
+
   return (
     <div className={darkMode ? "dark-mode" : ""}>
 
@@ -48,20 +48,17 @@ function Home() {
 
           <ul className="nav navbar-nav navbar-right">
 
-            {/* LINKS */}
             <li><Link to="/">Home</Link></li>
             <li><a href="#services">Services</a></li>
             <li><Link to="/contact">Contact</Link></li>
             <li><Link to="/history">My Bookings</Link></li>
 
-            {/* 👑 ADMIN LINK */}
+            {/* ADMIN */}
             {isAdmin && (
-              <li>
-                <Link to="/admin">Admin</Link>
-              </li>
+              <li><Link to="/admin">Admin</Link></li>
             )}
 
-            {/* BOOK BUTTON */}
+            {/* BOOK */}
             <li style={{ marginTop: "8px" }}>
               <button
                 className="btn btn-warning btn-sm"
@@ -89,7 +86,7 @@ function Home() {
               </li>
             )}
 
-            {/* 🧪 ADMIN TEST BUTTON */}
+            {/* ADMIN TEST */}
             {!isAdmin && (
               <li>
                 <button
@@ -101,7 +98,7 @@ function Home() {
               </li>
             )}
 
-            {/* 🌙 DARK MODE */}
+            {/* DARK MODE */}
             <li>
               <button
                 onClick={() => setDarkMode(!darkMode)}
@@ -179,6 +176,9 @@ function Home() {
           © 2026 Glow Salon | All Rights Reserved
         </div>
       </footer>
+
+      {/* ✅ CHATBOT FIXED HERE (IMPORTANT) */}
+      <Chatbot />
 
     </div>
   );
