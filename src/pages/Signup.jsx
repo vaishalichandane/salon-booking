@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 
 function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

@@ -6,7 +6,6 @@ function Success() {
   const { state } = useLocation();
  
   const navigate = useNavigate();
- const data = state || {};
   const downloadInvoice = () => {
     const doc = new jsPDF();
 
