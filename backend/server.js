@@ -4,7 +4,6 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const Razorpay = require("razorpay");
 const authRoutes = require("./routes/auth");
-
 const User = require("./models/User");
 
 const app = express();
@@ -14,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use(express.json());
-app.use("/auth", require("./routes/auth"));
+
 
 /* =========================
    ✅ MONGODB CONNECTION
