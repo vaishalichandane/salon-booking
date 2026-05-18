@@ -99,7 +99,7 @@ function Payment() {
           color: "#e91e63",
         },
       };
-
+console.log(window.Razorpay);
       const rzp = new window.Razorpay(options);
       rzp.open();
 
