@@ -18,7 +18,7 @@ function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
+      const res = await fetch("https://salon-booking-1r2e.onrender.com/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
