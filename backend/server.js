@@ -20,7 +20,7 @@ app.use(express.json());
 ========================= */
 mongoose
   .connect(
-    "mongodb+srv://vaishalichandane543_db_user:test123@cluster0.kowcsjh.mongodb.net/salonDB?retryWrites=true&w=majority"
+    "mongodb+srv://vaishalichandane543_db_user:salon1234@cluster0.kowcsjh.mongodb.net/salonDB?retryWrites=true&w=majority"
   )
   .then(() => console.log("MongoDB Connected ✅"))
   .catch((err) => console.log("Mongo Error ❌", err));
